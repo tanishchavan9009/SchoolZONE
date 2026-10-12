@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAFEZONE 360 — Next-Gen School Zone Smart Road Safety Command System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="command-os">
+  <!-- Dynamic HUD scanlines & audio particles -->
+  <div class="hud-grid-overlay" aria-hidden="true"></div>
+  <div class="hud-scanline" aria-hidden="true"></div>
+  <div id="cursorGlow" class="cursor-glow" aria-hidden="true"></div>
+  <div id="scrollProgress" class="scroll-progress-bar"></div>
+
+  <!-- NAVIGATION -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-brand">
+        <div class="radar-box">
+          <div class="radar-sweep"></div>
+          <svg viewBox="0 0 32 32" class="brand-svg">
+            <polygon points="16,4 26,24 16,19 6,24" fill="#00E5FF"/>
+            <circle cx="16" cy="16" r="3.5" fill="#FFB547"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SAFEZONE<span class="text-cyan">360</span></span>
+          <span class="brand-tag"><span class="live-dot pulse"></span> LIVE SMART DEFENSE</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#hero" class="nav-link active">Live Command</a>
+        <a href="#interactive-simulator" class="nav-link">Working Simulator</a>
+        <a href="#atmospheric-matrix" class="nav-link">Weather &amp; Lighting</a>
+        <a href="#interactive-hardware" class="nav-link">Smart Hardware</a>
+        <a href="#risk-calculator" class="nav-link">Risk Calculator</a>
+        <a href="#emergency-protocol" class="nav-link">Emergency Defense</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="soundToggle" class="hud-btn-icon" aria-label="Toggle Tactical Audio Feedback" title="Tactical UI Audio Feedback">
+          <svg viewBox="0 0 24 24" class="icon" id="soundIconOn"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" class="icon hidden" id="soundIconOff"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6m0-6l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <button id="thermalToggle" class="hud-btn-icon" aria-label="Toggle Thermal Night Vision Mode" title="Thermal Infrared Vision">
+          <svg viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M3 12h3m12 0h3M12 3v3m0 12v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <a href="#interactive-simulator" class="hud-cta-btn">Launch Prototype</a>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. LIVE COMMAND CENTER HERO (PERSPECTIVE REAL INTERACTION) -->
+    <section id="hero" class="hero-section">
+      <div class="container hero-content">
+        <div class="hero-live-pill">
+          <span class="status-pulse-dot"></span>
+          <span>AUTONOMOUS SCHOOL PERIMETER SAFETY INFRASTRUCTURE</span>
+        </div>
+
+        <h1 class="hero-headline">
+          THE ROAD TO SCHOOL<br>
+          <span class="text-glow-cyan">SHOULD NEVER BE A RISK.</span>
+        </h1>
+
+        <p class="hero-description">
+          An operational digital twin prototype integrating dynamic speed radar governors, intelligent in-road LED pedestrian sanctuaries, curbside optical shields, and automated child-priority traffic dispatching.
+        </p>
+
+        <div class="hero-cta-cluster">
+          <a href="#interactive-simulator" class="btn btn-cyan-glow">
+            <svg viewBox="0 0 24 24" class="btn-icon"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor"/></svg>
+            <span>Operate Live Simulator</span>
+          </a>
+          <button id="heroTriggerHazard" class="btn btn-hazard-glow">
+            <span class="hazard-blink">&#9888;</span>
+            <span>Simulate Speeding Breach</span>
+          </button>
+          <a href="#risk-calculator" class="btn btn-outline-glass">
+            <span>Calculate Zone Risk Index &rarr;</span>
+          </a>
+        </div>
+
+        <!-- Live Real-Time Telemetry Status Strip -->
+        <div class="hero-telemetry-hud">
+          <div class="telemetry-block">
+            <span class="telemetry-label">SPEED ARREST STATUS</span>
+            <span class="telemetry-val text-cyan" id="heroSpeedStatus">20 KM/H STRICT LOCK</span>
+            <span class="telemetry-meta">LiDAR Radar Active</span>
+          </div>
+          <div class="telemetry-block">
+            <span class="telemetry-label">IN-ROAD ZEBRA SANCTUARY</span>
+            <span class="telemetry-val text-green" id="heroCrossingStatus">CHILD PRIORITY ACTIVE</span>
+            <span class="telemetry-meta">Pulsing LED Pavers On</span>
+          </div>
+          <div class="telemetry-block">
+            <span class="telemetry-label">PICKUP LANE FLOW</span>
+            <span class="telemetry-val text-amber" id="heroPickupStatus">SINGLE-FILE RECIRCULATION</span>
+            <span class="telemetry-meta">45s Max Bay Idle Rule</span>
+          </div>
+          <div class="telemetry-block">
+            <span class="telemetry-label">COLLISION HAZARD INDEX</span>
+            <span class="telemetry-val text-cyan" id="heroSafetyIndex">0.0% ZERO DEFICIT</span>
+            <span class="telemetry-meta">PCCOE School Corridor</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Hero 60FPS Road Perspective Canvas -->
+      <div class="hero-perspective-viewport">
+        <div class="hero-radar-line"></div>
+        <canvas id="heroPerspectiveCanvas" width="1280" height="480"></canvas>
+        <div class="hero-viewport-overlay">
+          <div class="hud-pill"><span class="rec-dot"></span> REAL-TIME APPROACH RADAR FEED</div>
+          <div class="hud-trap-box">
+            <span class="trap-caption">LIDAR DETECTOR</span>
+            <span class="trap-num" id="heroLiveApproachSpeed">19 km/h</span>
+            <span class="trap-badge safe">COMPLIANT</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. HIGH-OCTANE FULLY WORKING INTERACTIVE SIMULATOR (SIGNATURE MODEL) -->
+    <section id="interactive-simulator" class="section sim-section">
+      <div class="container">
+        <div class="section-badge-wrap">
+          <span class="hud-badge">WORKING MODEL PROTOTYPE</span>
+          <span class="hud-badge-sub">60FPS REAL TRAFFIC KINETICS &bull; VEHICLE PHYSICS ENGINE</span>
+        </div>
+        <h2 class="section-title">Smart School-Zone <span class="text-cyan">Simulator</span></h2>
+        <p class="section-desc">
+          Take direct control of the school zone defenses. Toggle radar speed enforcement, activate in-road zebra beacons, test single-file drop-off flow, spawn crossing students anywhere on the road, and witness automatic vehicle emergency braking.
+        </p>
+
+        <!-- Simulator Core Grid -->
+        <div class="sim-master-grid">
+          <!-- Control Cockpit Left -->
+          <div class="sim-cockpit-panel">
+            <div class="cockpit-header">
+              <span class="cockpit-title">SAFETY COUNTERMEASURES</span>
+              <span class="cockpit-live"><span class="dot-green"></span> ACTIVE PROTOTYPE</span>
+            </div>
+
+            <!-- Interactive Toggles -->
+            <div class="cockpit-toggles">
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-name">20 km/h Radar Speed Governor</div>
+                  <div class="toggle-sub">Arrests vehicle velocity to safe braking distance</div>
+                </div>
+                <label class="switch-box">
+                  <input type="checkbox" id="toggleSpeedGovernor" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-name">Pulsing LED Zebra Crossing</div>
+                  <div class="toggle-sub">In-road pavers force vehicles to halt before crosswalk</div>
+                </div>
+                <label class="switch-box">
+                  <input type="checkbox" id="toggleZebraSignal" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-name">Dedicated Single-File Drop-Off Bay</div>
+                  <div class="toggle-sub">Segregated bay eliminates curbside double parking</div>
+                </div>
+                <label class="switch-box">
+                  <input type="checkbox" id="togglePickupBay" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-name">Flashing School Warning Masts</div>
+                  <div class="toggle-sub">Optical beacons 200m ahead alerting drivers</div>
+                </div>
+                <label class="switch-box">
+                  <input type="checkbox" id="toggleWarningMasts" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-name">Optical Curbside Laser Curtain</div>
+                  <div class="toggle-sub">Prevents children from running out between cars</div>
+                </div>
+                <label class="switch-box">
+                  <input type="checkbox" id="toggleLaserCurtain" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Dynamic Traffic Rate Sliders -->
+            <div class="cockpit-sliders">
+              <div class="slider-field">
+                <div class="slider-labels">
+                  <span>Traffic Volume:</span>
+                  <span id="labelCarDensity" class="text-cyan">5 Vehicles</span>
+                </div>
+                <input type="range" id="sliderCarDensity" min="2" max="10" value="5" class="hud-range">
+              </div>
+
+              <div class="slider-field">
+                <div class="slider-labels">
+                  <span>Student Crossing Waves:</span>
+                  <span id="labelPedRate" class="text-green">Continuous</span>
+                </div>
+                <input type="range" id="sliderPedRate" min="1" max="5" value="3" class="hud-range">
+              </div>
+            </div>
+
+            <!-- Quick Action Scenarios -->
+            <div class="cockpit-actions">
+              <button id="btnScenarioRush" class="action-btn">
+                <span>&#128663; Morning Rush (Chaos)</span>
+              </button>
+              <button id="btnScenarioSafe" class="action-btn active">
+                <span>&#128737; SafeZone 360 Mode</span>
+              </button>
+              <button id="btnSpawnStudent" class="action-btn btn-spawn">
+                <span>&#128694; Send Student Group</span>
+              </button>
+              <button id="btnResetSim" class="action-btn btn-reset">
+                <span>&#8634; Reset Simulation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Real Kinetic Canvas Arena Right -->
+          <div class="sim-canvas-viewport-box">
+            <div class="canvas-header-bar">
+              <div class="canvas-tag"><span class="badge-dot-cyan"></span> 60FPS TOP-DOWN ARENA</div>
+              <div class="canvas-telemetry">
+                <span>VEHICLES: <strong id="simLiveCars" class="text-cyan">5</strong></span>
+                <span>YIELD COMPLIANCE: <strong id="simLiveYield" class="text-green">100%</strong></span>
+                <span>COLLISION RISK: <strong id="simLiveRisk" class="text-green">0.0%</strong></span>
+              </div>
+            </div>
+
+            <div class="canvas-arena-frame">
+              <canvas id="interactiveCanvas" width="940" height="540"></canvas>
+              
+              <!-- Automatic Vehicle Collision Alarm Banner -->
+              <div id="simAlarmBanner" class="alarm-floating-banner hidden">
+                <div class="alarm-headline">&#9888; CRITICAL VEHICLE INCURSION DETECTED</div>
+                <div class="alarm-subline">EMERGENCY CROSSING CURTAIN DEPLOYED &bull; AUTOMATIC SPEED ARREST</div>
+              </div>
+            </div>
+
+            <div class="canvas-footer-bar">
+              <span>&#128070; Click anywhere on the street to command students to cross</span>
+              <span class="text-cyan">Real physics &bull; Particle braking taillights &bull; Pedestrian avoidance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. REAL ATMOSPHERIC & ENVIRONMENTAL CONTROLLER -->
+    <section id="atmospheric-matrix" class="section weather-section">
+      <div class="container">
+        <div class="section-badge-wrap">
+          <span class="hud-badge">DYNAMIC SENSORY CONDITIONS</span>
+        </div>
+        <h2 class="section-title">Atmospheric &amp; Weather <span class="text-cyan">Controller</span></h2>
+        <p class="section-desc">
+          Road-safety risks change drastically under weather variations. Test how the SafeZone 360 automated infrastructure responds in real time.
+        </p>
+
+        <div class="weather-cards-grid">
+          <button class="weather-selector-card active" data-weather="daylight">
+            <div class="weather-sym">&#9728;</div>
+            <div class="weather-name">Bright Daylight</div>
+            <div class="weather-detail">Nominal 20 km/h baseline with standard optical and LiDAR pedestrian tracking.</div>
+            <div class="weather-state text-green">Optimal Visibility</div>
+          </button>
+
+          <button class="weather-selector-card" data-weather="monsoon">
+            <div class="weather-sym">&#127783;</div>
+            <div class="weather-name">Heavy Monsoon Rain</div>
+            <div class="weather-detail">Braking distance increases 35%. Speed limit drops to 15 km/h. In-road zebra LEDs double luminance.</div>
+            <div class="weather-state text-amber">Hydroplane Defense</div>
+          </button>
+
+          <button class="weather-selector-card" data-weather="fog">
+            <div class="weather-sym">&#127787;</div>
+            <div class="weather-name">Dense Morning Fog</div>
+            <div class="weather-detail">Ground laser projection creates illuminated safety curtains through dense haze. Ultrasonic chirps active.</div>
+            <div class="weather-state text-cyan">Optical Penetration</div>
+          </button>
+
+          <button class="weather-selector-card" data-weather="thermal">
+            <div class="weather-sym">&#127769;</div>
+            <div class="weather-name">Night / Infrared Vision</div>
+            <div class="weather-detail">Thermal infrared body-heat cameras track approaching students, illuminating reactive spotlights.</div>
+            <div class="weather-state text-coral">Thermal Guidance</div>
+          </button>
+        </div>
+
+        <!-- Real-time Atmospheric Adaptation Feedback -->
+        <div class="weather-feedback-cockpit">
+          <div class="weather-preview-box">
+            <div class="weather-effect-layer" id="weatherParticleLayer"></div>
+            <div class="weather-scene-mock">
+              <div class="mock-road"></div>
+              <div class="mock-zebra">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="mock-sensor-halo" id="mockHalo"></div>
+            </div>
+          </div>
+
+          <div class="weather-telemetry-box">
+            <div class="weather-hud-title" id="weatherModeTitle">SYSTEM ADAPTATION: BRIGHT DAYLIGHT</div>
+            <p class="weather-hud-desc" id="weatherModeDesc">
+              Standard radar and optical tracking functioning at nominal parameters. Optical contrast at 100%. Pavement temperature and braking coefficient nominal.
+            </p>
+            <div class="weather-metrics-grid">
+              <div class="w-metric">
+                <span class="w-label">BRAKING STOP DISTANCE</span>
+                <strong class="w-val" id="weatherBrakingDist">4.2 Meters</strong>
+              </div>
+              <div class="w-metric">
+                <span class="w-label">ZEBRA BEACON LUMENS</span>
+                <strong class="w-val" id="weatherLumens">8,000 lm</strong>
+              </div>
+              <div class="w-metric">
+                <span class="w-label">AUTOMATED SPEED CAP</span>
+                <strong class="w-val" id="weatherSpeedCap">20 km/h Max</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SMART-CITY HARDWARE & INFRASTRUCTURE MATRIX -->
+    <section id="interactive-hardware" class="section hardware-section">
+      <div class="container">
+        <div class="section-badge-wrap">
+          <span class="hud-badge">SMART-CITY HARDWARE LAYER</span>
+        </div>
+        <h2 class="section-title">Physical &amp; Digital <span class="text-cyan">Hardware Stack</span></h2>
+        <p class="section-desc">
+          Explore the six interconnected safety hardware modules that power the SafeZone 360 perimeter.
+        </p>
+
+        <div class="hardware-cards-grid">
+          <!-- Module 1 -->
+          <div class="hw-module-card">
+            <div class="hw-icon-wrap">
+              <svg viewBox="0 0 24 24" class="hw-icon"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="6" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><line x1="12" y1="2" x2="12" y2="12" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="hw-tag">LIDAR RADAR</div>
+            <h3 class="hw-title">Dynamic Speed Governor Display</h3>
+            <p class="hw-text">Active radar display flashing real-time vehicle speed 150m ahead of the school gate with green/amber/red compliance warnings.</p>
+            <div class="hw-specs">
+              <span>Detection Arc: <strong>120&deg;</strong></span>
+              <span>Response: <strong>12ms</strong></span>
+            </div>
+          </div>
+
+          <!-- Module 2 -->
+          <div class="hw-module-card">
+            <div class="hw-icon-wrap">
+              <svg viewBox="0 0 24 24" class="hw-icon"><rect x="3" y="4" width="18" height="3" fill="currentColor"/><rect x="3" y="10" width="18" height="3" fill="currentColor"/><rect x="3" y="16" width="18" height="3" fill="currentColor"/></svg>
+            </div>
+            <div class="hw-tag">IN-ROAD LED</div>
+            <h3 class="hw-title">Intelligent Pulsing Zebra Crossings</h3>
+            <p class="hw-text">Flush-mounted IK10 road pavers illuminate in electric cyan when children step onto the crosswalk, deploying ruby red stop-line beacons for motorists.</p>
+            <div class="hw-specs">
+              <span>Luminance: <strong>12,000 Nits</strong></span>
+              <span>Impact: <strong>IK10 / IP68</strong></span>
+            </div>
+          </div>
+
+          <!-- Module 3 -->
+          <div class="hw-module-card">
+            <div class="hw-icon-wrap">
+              <svg viewBox="0 0 24 24" class="hw-icon"><rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" fill="none" stroke-width="2"/><line x1="9" y1="5" x2="9" y2="19" stroke="currentColor" stroke-dasharray="2 2"/><circle cx="15" cy="12" r="3" fill="currentColor"/></svg>
+            </div>
+            <div class="hw-tag">FLOW SYSTEM</div>
+            <h3 class="hw-title">Automated Single-Lane Drop-Off Bay</h3>
+            <p class="hw-desc">Segregated single-file drop bay equipped with curbside induction sensors enforcing a maximum 45-second passenger transfer.</p>
+            <div class="hw-specs">
+              <span>Throughput: <strong>120 cars/hr</strong></span>
+              <span>Congestion Cut: <strong>78%</strong></span>
+            </div>
+          </div>
+
+          <!-- Module 4 -->
+          <div class="hw-module-card">
+            <div class="hw-icon-wrap">
+              <svg viewBox="0 0 24 24" class="hw-icon"><rect x="7" y="2" width="10" height="20" rx="3" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="12" cy="7" r="2.5" fill="#FF5D73"/><circle cx="12" cy="12" r="2.5" fill="#FFB547"/><circle cx="12" cy="17" r="2.5" fill="#34D399"/></svg>
+            </div>
+            <div class="hw-tag">ADAPTIVE SIGNALS</div>
+            <h3 class="hw-title">Synchronized Bell-Time Beacon Signals</h3>
+            <p class="hw-text">Signal phases dynamically sync with PCCOE and school bell timetables, automatically granting pedestrian crossing priority during peak student influx.</p>
+            <div class="hw-specs">
+              <span>ERP Sync: <strong>Automated</strong></span>
+              <span>Pedestrian Green: <strong>Priority</strong></span>
+            </div>
+          </div>
+
+          <!-- Module 5 -->
+          <div class="hw-module-card">
+            <div class="hw-icon-wrap">
+              <svg viewBox="0 0 24 24" class="hw-icon"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" fill="none" stroke-width="2"/></svg>
+            </div>
+            <div class="hw-tag">SAFETY SHIELD</div>
+            <h3 class="hw-title">Optical Curbside Laser Curtain</h3>
+            <p class="hw-text">Invisible eye-safe laser curtains along sidewalks prevent children from running blindly into live traffic lanes or between parked vehicles.</p>
+            <div class="hw-specs">
+              <span>Laser Class: <strong>Class 1 Eye-Safe</strong></span>
+              <span>Lock Delay: <strong>Instant</strong></span>
+            </div>
+          </div>
+
+          <!-- Module 6 -->
+          <div class="hw-module-card">
+            <div class="hw-icon-wrap">
+              <svg viewBox="0 0 24 24" class="hw-icon"><rect x="5" y="2" width="14" height="20" rx="3" stroke="currentColor" fill="none" stroke-width="2"/><line x1="12" y1="18" x2="12" y2="18.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="hw-tag">MOBILE DISPATCH</div>
+            <h3 class="hw-title">Safe School Zone Digital Dispatcher</h3>
+            <p class="hw-text">Companion app coordinating student pickups, notifying parents of exact bay arrival windows, and providing real-time safe walking corridors.</p>
+            <div class="hw-specs">
+              <span>Platform: <strong>Web &amp; Mobile</strong></span>
+              <span>Latency: <strong>&lt; 50ms</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. INTERACTIVE LIVE ZONE SAFETY AUDIT CALCULATOR -->
+    <section id="risk-calculator" class="section audit-section">
+      <div class="container">
+        <div class="section-badge-wrap">
+          <span class="hud-badge">INTERACTIVE CIVIC TOOL</span>
+        </div>
+        <h2 class="section-title">School Zone Risk &amp; Safety <span class="text-cyan">Audit Calculator</span></h2>
+        <p class="section-desc">
+          Assess any school approach street. Tweak street conditions below to compute the live Hazard Index and generate automated infrastructure recommendations.
+        </p>
+
+        <div class="calculator-master-panel">
+          <div class="calc-inputs-column">
+            <h3 class="calc-panel-heading">Street Safety Configuration</h3>
+
+            <div class="calc-field">
+              <label for="inputAvgSpeed">Average Vehicle Speed Outside School:</label>
+              <div class="calc-slider-wrap">
+                <input type="range" id="inputAvgSpeed" min="20" max="70" value="45" class="hud-range-danger">
+                <span id="displaySpeedVal" class="slider-val-badge text-coral">45 km/h</span>
+              </div>
+            </div>
+
+            <div class="calc-field">
+              <label for="selectCrossingType">Pedestrian Crossing Infrastructure:</label>
+              <select id="selectCrossingType" class="calc-select-box">
+                <option value="none">No Crossing / Faded Paint Only</option>
+                <option value="standard" selected>Standard White Paint (Uncontrolled)</option>
+                <option value="illuminated">Illuminated Crosswalk with Push-Button</option>
+                <option value="safezone">SafeZone 360 In-Road LED + Sensor Sanctuary</option>
+              </select>
+            </div>
+
+            <div class="calc-field">
+              <label for="selectDropoffType">Student Pickup / Drop-Off Organization:</label>
+              <select id="selectDropoffType" class="calc-select-box">
+                <option value="chaotic">Unregulated (Severe Double Parking)</option>
+                <option value="semi">Designated Curbside (Unenforced)</option>
+                <option value="dedicated" selected>Segregated Single-File Drop-Off Bay</option>
+              </select>
+            </div>
+
+            <div class="calc-field">
+              <label for="selectPolicePresence">Traffic Guard / Marshalling Presence:</label>
+              <select id="selectPolicePresence" class="calc-select-box">
+                <option value="none">Rare / Never Present</option>
+                <option value="intermittent" selected>Intermittent During Morning Rush</option>
+                <option value="continuous">Continuous Dedicated Marshalling</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Output Gauge & Report -->
+          <div class="calc-output-column">
+            <div class="gauge-ring-wrap">
+              <div class="gauge-ring-circle" id="riskGaugeCircle">
+                <div class="gauge-ring-inner">
+                  <span class="gauge-big-score" id="riskScoreNumber">64</span>
+                  <span class="gauge-rating-tag" id="riskRatingTag">MODERATE HAZARD</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="calc-recs-box">
+              <div class="recs-title">RECOMMENDED COUNTERMEASURES:</div>
+              <ul class="recs-list" id="calcRecommendationsList">
+                <li>Deploy 20 km/h LiDAR Radar Speed Governor to reduce stopping distance.</li>
+                <li>Upgrade faded crosswalk to in-road pulsing LED pavers.</li>
+                <li>Implement single-file bay to eliminate double parking lane choke.</li>
+              </ul>
+            </div>
+
+            <button id="btnTransferToSim" class="btn btn-cyan-full">
+              <span>Transfer Parameters to Simulator &rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. RAPID EMERGENCY SOS INCIDENT RESPONSE PROTOCOLS -->
+    <section id="emergency-protocol" class="section sos-section">
+      <div class="container">
+        <div class="section-badge-wrap">
+          <span class="hud-badge">FAIL-SAFE INCIDENT RESPONSE</span>
+        </div>
+        <h2 class="section-title">Automated Emergency <span class="text-coral">Breach Protocol</span></h2>
+        <p class="section-desc">
+          When a vehicle exceeds 35 km/h inside the active school perimeter, the SafeZone 360 automated defense system executes a sub-second multi-stage fail-safe.
+        </p>
+
+        <div class="sos-cards-row">
+          <div class="sos-phase-card">
+            <div class="sos-time-tag">0.00s &bull; DETECTION</div>
+            <div class="sos-glyph text-coral">&#9888;</div>
+            <h4 class="sos-title">LiDAR Incursion Lock</h4>
+            <p class="sos-desc">Radar locks incoming vehicle breaching 35 km/h within 100m zone. Vehicle speed and trajectory computed against crossing students.</p>
+          </div>
+
+          <div class="sos-phase-card">
+            <div class="sos-time-tag">0.12s &bull; WARNING</div>
+            <div class="sos-glyph text-amber">&#9729;</div>
+            <h4 class="sos-title">Strobe Light Curtain</h4>
+            <p class="sos-desc">In-road LED pavers shift to high-intensity strobe ruby red. Directional acoustic chirp alerts walking students to halt.</p>
+          </div>
+
+          <div class="sos-phase-card">
+            <div class="sos-time-tag">0.25s &bull; ARREST</div>
+            <div class="sos-glyph text-cyan">&#128737;</div>
+            <h4 class="sos-title">Crossing Barrier Hold</h4>
+            <p class="sos-desc">Pedestrian gate guides hold kids back from the danger lane. Approach overhead sign flashes emergency vehicle brake directive.</p>
+          </div>
+
+          <div class="sos-phase-card">
+            <div class="sos-time-tag">0.50s &bull; DISPATCH</div>
+            <div class="sos-glyph text-green">&#128246;</div>
+            <h4 class="sos-title">Campus &amp; Police Alert</h4>
+            <p class="sos-desc">Incident frame and telemetry tagged and instantly routed to PCCOE gate control and municipal traffic police.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- TACTICAL FOOTER -->
+  <footer class="footer">
+    <div class="container footer-layout">
+      <div class="footer-left">
+        <div class="footer-brand-title">SAFEZONE<span class="text-cyan">360</span></div>
+        <p class="footer-motto">One Safer Street. A Thousand Brighter Tomorrows.</p>
+        <div class="footer-inst-chip">
+          Pimpri Chinchwad College of Engineering (PCCOE) Pune &bull; Guide: Dr. Vrushali Bhalerao
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <a href="#hero">Live Command</a>
+        <a href="#interactive-simulator">Simulator</a>
+        <a href="#atmospheric-matrix">Weather Matrix</a>
+        <a href="#interactive-hardware">Hardware</a>
+        <a href="#risk-calculator">Risk Audit</a>
+        <a href="#emergency-protocol">SOS Protocols</a>
+        <button id="btnFooterTop" class="footer-top-btn">&uarr; TOP</button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
